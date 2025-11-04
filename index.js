@@ -128,7 +128,13 @@ async function startApp() {
 startApp();
 
 // Routes
-app.get('/', (req, res) => res.send('API is running with Azure SQL Database ✅'));
+// Root route - serve the HTML page from public folder
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// API health check endpoint
+app.get('/api/health', (req, res) => res.send('API is running with Azure SQL Database ✅'));
 
 app.get('/todos', async (req, res) => {
   try {

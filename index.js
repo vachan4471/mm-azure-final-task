@@ -1,33 +1,49 @@
-require('dotenv').config();
-
 const express = require('express');
+const cors = require('cors');
+const { initTable, getAllTodos, addTodo, deleteTodo } = require('./models/todo');
+
 const app = express();
-const connectDB = require('./config/db.js');
-const mongoose = require("mongoose");
-const cors = require("cors");
-
-//ROUTE IMPORTS
-const todoRoutes = require('./routes/todo');
-
-//APP SETTINGS
-app.use(express.json());
-const PORT = process.env.PORT || 5050;
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
+app.use(express.json());
 
+const PORT = process.env.PORT || 8080;
 
-app.use("/healthcheck", (req, res) => {
-    res.status(200).send("ok");
-  });
-app.use(`/api/${process.env.API_V1}/todo`, todoRoutes);
+// Initialize SQL table
+initTable().catch(console.error);
 
-//APP initialization
-connectDB();
-mongoose.connection.once('open', () => {
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
+// Routes
+app.get('/', (req, res) => res.send('API is running with Azure SQL Database ✅'));
+
+app.get('/todos', async (req, res) => {
+  try {
+    const todos = await getAllTodos();
+    res.json(todos);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
-//APP connection error
-mongoose.connection.on("error", (error) => {
-    console.log("Error connecting to db: ", error);
-  });
+
+app.post('/todos', async (req, res) => {
+  try {
+    const { title } = req.body;
+    await addTodo(title);
+    res.status(201).send('Todo added');
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+app.delete('/todos/:id', async (req, res) => {
+  try {
+    await deleteTodo(req.params.id);
+    res.send('Todo deleted');
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});

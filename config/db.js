@@ -1,12 +1,30 @@
-const mongoose = require("mongoose");
+const sql = require('mssql');
+require('dotenv').config();
 
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
-    console.log(`MongoDB connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.log("Error connecting to db: ", error);
+const config = {
+  user: process.env.SQL_USER,
+  password: process.env.SQL_PASSWORD,
+  server: process.env.SQL_SERVER,
+  database: process.env.SQL_DATABASE,
+  options: {
+    encrypt: process.env.SQL_ENCRYPT === 'true',
+    trustServerCertificate: process.env.SQL_TRUST_SERVER_CERTIFICATE === 'true'
   }
 };
 
-module.exports = connectDB;
+let poolPromise;
+
+async function getPool() {
+  if (!poolPromise) {
+    try {
+      poolPromise = await sql.connect(config);
+      console.log('✅ Connected to Azure SQL Database');
+    } catch (err) {
+      console.error('❌ Database Connection Failed:', err.message);
+      throw err;
+    }
+  }
+  return poolPromise;
+}
+
+module.exports = { sql, getPool };

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Azure SQL API Health Monitor</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    h1 { color: #0078d4; }
+    .status {
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .ok { background-color: #c6f6d5; color: #22543d; }
+    .fail { background-color: #fed7d7; color: #742a2a; }
+    button {
+      margin-top: 15px;
+      padding: 10px 16px;
+      border: none;
+      background-color: #0078d4;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #005ea6; }
+  </style>
+</head>
+<body>
+  <h1>Azure API Health Check 🌐</h1>
+  <div id="status" class="status">Checking...</div>
+  <button onclick="checkHealth()">Recheck</button>
+
+  <script>
+    async function checkHealth() {
+      const el = document.getElementById('status');
+      el.textContent = 'Checking...';
+      el.className = 'status';
+      try {
+        const res = await fetch('/');
+        if (res.ok) {
+          const txt = await res.text();
+          el.textContent = `✅ Server OK: ${txt}`;
+          el.classList.add('ok');
+        } else {
+          el.textContent = `❌ Server error: ${res.status}`;
+          el.classList.add('fail');
+        }
+      } catch (e) {
+        el.textContent = '❌ Cannot connect to server';
+        el.classList.add('fail');
+      }
+    }
+    checkHealth();
+  </script>
+</body>
+</html>

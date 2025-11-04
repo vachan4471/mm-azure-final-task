@@ -84,7 +84,9 @@ The application uses `DefaultAzureCredential`, which will try multiple authentic
 
 ### 5. Configure Environment Variables
 
-Update your `.env` file:
+#### For Local Development:
+
+Create a `.env` file in your project root:
 
 ```env
 # Azure Key Vault URL (required for Key Vault integration)
@@ -101,6 +103,24 @@ SQL_PASSWORD=Admin123!
 SQL_ENCRYPT=true
 SQL_TRUST_SERVER_CERTIFICATE=false
 ```
+
+#### For Azure App Service:
+
+**You need to set environment variables in Azure App Service Configuration**, not in a `.env` file.
+
+1. **Via Azure Portal:**
+   - Go to your App Service → Configuration → Application settings
+   - Click "+ New application setting"
+   - Add: `AZURE_KEY_VAULT_URL` = `https://kv-mm-node.vault.azure.net/`
+   - Click "Save"
+
+2. **Via Azure CLI:**
+   ```bash
+   az webapp config appsettings set \
+     --name your-app-name \
+     --resource-group rg-mm-node-app \
+     --settings AZURE_KEY_VAULT_URL=https://kv-mm-node.vault.azure.net/
+   ```
 
 **Note:** If `AZURE_KEY_VAULT_URL` is not set, the application will automatically use the environment variables as fallback.
 

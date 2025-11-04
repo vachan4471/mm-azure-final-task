@@ -40,12 +40,12 @@ az keyvault create --name your-keyvault-name --resource-group myResourceGroup --
 Add your database secrets to Key Vault with the following names:
 
 ```bash
-az keyvault secret set --vault-name your-keyvault-name --name "SQL-SERVER" --value "db-server-mm-node.database.windows.net"
-az keyvault secret set --vault-name your-keyvault-name --name "SQL-DATABASE" --value "db-mm-node"
-az keyvault secret set --vault-name your-keyvault-name --name "SQL-USER" --value "sqladmin"
-az keyvault secret set --vault-name your-keyvault-name --name "SQL-PASSWORD" --value "Admin123!"
-az keyvault secret set --vault-name your-keyvault-name --name "SQL-ENCRYPT" --value "true"
-az keyvault secret set --vault-name your-keyvault-name --name "SQL-TRUST-SERVER-CERTIFICATE" --value "false"
+az keyvault secret set --vault-name kv-mm-node --name "SQL-SERVER" --value "db-server-mm-node.database.windows.net"
+az keyvault secret set --vault-name kv-mm-node --name "SQL-DATABASE" --value "db-mm-node"
+az keyvault secret set --vault-name kv-mm-node --name "SQL-USER" --value "sqladmin"
+az keyvault secret set --vault-name kv-mm-node --name "SQL-PASSWORD" --value "Admin123!"
+az keyvault secret set --vault-name kv-mm-node --name "SQL-ENCRYPT" --value "true"
+az keyvault secret set --vault-name kv-mm-node --name "SQL-TRUST-SERVER-CERTIFICATE" --value "false"
 ```
 
 ### 4. Configure Access
@@ -76,10 +76,10 @@ The application uses `DefaultAzureCredential`, which will try multiple authentic
 2. Grant the Managed Identity access to Key Vault:
    ```bash
    # Get the principal ID from the App Service Identity
-   PRINCIPAL_ID=$(az webapp identity show --name your-app-name --resource-group myResourceGroup --query principalId -o tsv)
+   PRINCIPAL_ID=$(az webapp identity show --name webapp-mm-eastus-node --resource-group rg-mm-node-app --query principalId -o tsv)
    
    # Grant access
-   az keyvault set-policy --name your-keyvault-name --object-id $PRINCIPAL_ID --secret-permissions get list
+   az keyvault set-policy --name kv-mm-node --object-id 3222ca2b-a674-4860-aa66-29de035b8fce --secret-permissions get list
    ```
 
 ### 5. Configure Environment Variables

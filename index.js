@@ -1,3 +1,9 @@
+// Log immediately when script starts
+console.log('📦 index.js loaded - Application starting...');
+console.log('📦 Node.js version:', process.version);
+console.log('📦 Current working directory:', process.cwd());
+console.log('📦 Environment:', process.env.NODE_ENV || 'development');
+
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason, promise) => {
   console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
